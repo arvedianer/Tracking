@@ -10,11 +10,12 @@
     
     <style>
         :root {
-            --bg-color: #F5F5F7;
+            --bg-color: #F2F2F7;
             --card-bg: #FFFFFF;
-            --text-main: #1D1D1F;
-            --text-muted: #86868B;
+            --text-main: #1C1C1E;
+            --text-muted: #8E8E93;
             --accent: #007AFF;
+            --success: #34C759;
             --danger: #FF3B30;
             --border: #E5E5EA;
         }
@@ -65,7 +66,7 @@
 
         #map { flex-grow: 1; width: 100%; z-index: 1; }
 
-        /* Controls */
+        /* Controls / Buttons */
         #controls {
             position: absolute;
             bottom: 95px;
@@ -74,9 +75,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             z-index: 20;
             pointer-events: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
         }
 
         .btn {
@@ -88,36 +95,30 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            transition: transform 0.2s;
+            transition: transform 0.15s, background-color 0.2s;
         }
         .btn:active { transform: scale(0.96); }
 
-        #actionBtn {
-            background-color: var(--accent);
-            color: white;
-            padding: 16px 36px;
-            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.25);
-        }
-        #actionBtn.stop { background-color: var(--danger); box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25); }
-
+        .btn-primary { background-color: var(--accent); color: white; padding: 16px 36px; box-shadow: 0 8px 25px rgba(0, 122, 255, 0.25); }
+        .btn-success { background-color: var(--success); color: white; padding: 16px 30px; box-shadow: 0 8px 25px rgba(52, 199, 89, 0.25); }
+        .btn-danger { background-color: var(--danger); color: white; padding: 16px 30px; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25); }
+        
         #pocketBtn {
-            background-color: #1D1D1F;
+            background-color: #1C1C1E;
             color: white;
-            padding: 12px 24px;
-            font-size: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            display: none; /* Erst bei Start zeigen */
+            padding: 10px 20px;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: none;
         }
 
         /* Pocket Mode Overlay */
         #pocketOverlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 9999;
             color: #333;
@@ -127,16 +128,86 @@
             text-align: center;
             padding: 30px;
         }
-        #pocketOverlay p { font-size: 14px; color: #444; margin-top: 20px; }
+        #pocketOverlay p { font-size: 14px; color: #444; margin-top: 20px; line-height: 1.4; }
+
+        /* Summary Modal Screen */
+        #summaryModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 5000;
+            flex-direction: column;
+            padding: 24px;
+            padding-top: 50px;
+            overflow-y: auto;
+        }
+
+        #summaryMap {
+            width: 100%;
+            height: 200px;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .summary-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;}
+        .summary-card .label i { width: 12px; height: 12px; }
+        .summary-card .val { font-size: 20px; font-weight: 700; }
 
         /* Historie */
-        #historyView { padding: 24px; padding-top: 45px; overflow-y: auto; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.5px; }
-        .stats-summary { background: var(--card-bg); padding: 20px; border-radius: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
-        .workout-card { background: var(--card-bg); padding: 18px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.01); display: flex; justify-content: space-between; align-items: center; }
-        .workout-info .date { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
-        .workout-info .details { font-size: 15px; font-weight: 600; color: var(--text-main); }
-        .share-btn { background: var(--bg-color); border: none; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        #historyView { padding: 20px; padding-top: 45px; overflow-y: auto; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.5px; }
+        
+        .stats-summary { 
+            background: var(--card-bg); 
+            padding: 16px; 
+            border-radius: 20px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.01); 
+        }
+
+        .history-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .workout-card { 
+            background: var(--card-bg); 
+            padding: 16px; 
+            border-radius: 18px; 
+            margin-bottom: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.01); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .workout-info .date { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+        .workout-info .main-stats { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .workout-info .sub-stats { font-size: 13px; color: var(--text-muted); display: flex; gap: 10px; align-items: center; }
+        .workout-info .sub-stats span { display: flex; align-items: center; gap: 3px; }
+        .workout-info .sub-stats i { width: 12px; height: 12px; }
+        
+        .share-btn { background: var(--bg-color); border: none; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .share-btn i { width: 14px; height: 14px; }
         .no-workouts { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 15px; }
 
@@ -151,7 +222,33 @@
 
     <div id="pocketOverlay">
         <i data-lucide="lock" style="width: 48px; height: 48px; color: #222;"></i>
-        <p>Taschenmodus aktiv.<br>Doppelt tippen zum Entsperren.</p>
+        <p>Taschenmodus aktiv.<br>Doppelt tippen zum Aufwachen.</p>
+    </div>
+
+    <div id="summaryModal">
+        <h1 style="text-align: center;">Workout Zusammenfassung</h1>
+        <div id="summaryMap"></div>
+        
+        <div class="summary-grid">
+            <div class="summary-card">
+                <span class="label"><i data-lucide="milestone"></i>Distanz</span>
+                <span class="val" id="sumDist">0.00 km</span>
+            </div>
+            <div class="summary-card">
+                <span class="label"><i data-lucide="timer"></i>Dauer</span>
+                <span class="val" id="sumTime">00:00</span>
+            </div>
+            <div class="summary-card">
+                <span class="label"><i data-lucide="gauge"></i>Ø Pace</span>
+                <span class="val" id="sumPace">0:00 min/km</span>
+            </div>
+            <div class="summary-card">
+                <span class="label"><i data-lucide="trending-up"></i>Höhenmeter</span>
+                <span class="val" id="sumElevation">0m</span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 18px;" onclick="closeSummary()">Workout schließen</button>
     </div>
 
     <div id="trackView" class="view active">
@@ -178,7 +275,10 @@
 
         <div id="controls">
             <button id="pocketBtn" class="btn"><i data-lucide="eye-off"></i>Taschenmodus</button>
-            <button id="actionBtn" class="btn"><i data-lucide="play" id="btnIcon"></i><span id="btnText">Start</span></button>
+            
+            <div id="btnGroup">
+                <button id="startBtn" class="btn btn-primary" onclick="handleStart()"><i data-lucide="play"></i>Start</button>
+            </div>
         </div>
     </div>
 
@@ -189,6 +289,8 @@
             <div class="metric"><span class="metric-value" id="totalCountAllTime">0</span><span class="metric-label">Workouts</span></div>
             <div class="metric"><span class="metric-value" id="totalElevAllTime">0m</span><span class="metric-label">Höhenmeter</span></div>
         </div>
+        
+        <div class="history-section-title">Letzte Aktivitäten</div>
         <div id="historyList"></div>
     </div>
 
@@ -200,12 +302,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        let isTracking = false;
+        // Tracking Status: 'stopped', 'tracking', 'paused'
+        let trackingStatus = 'stopped'; 
         let watchId = null;
         let timerInterval = null;
         let wakeLock = null;
         
-        let startTime = 0;
         let totalSeconds = 0;
         let totalDistanceKm = 0;
         let totalElevationGain = 0;
@@ -214,22 +316,24 @@
         let positions = [];
         let polyline = null;
         let map = null;
+        let summaryMap = null;
+        let summaryPolyline = null;
         let marker = null;
 
         const timeDisplay = document.getElementById('timeDisplay');
         const distDisplay = document.getElementById('distDisplay');
         const paceDisplay = document.getElementById('paceDisplay');
         const elevationDisplay = document.getElementById('elevationDisplay');
-        const actionBtn = document.getElementById('actionBtn');
+        
         const pocketBtn = document.getElementById('pocketBtn');
         const pocketOverlay = document.getElementById('pocketOverlay');
-        const btnIcon = document.getElementById('btnIcon');
-        const btnText = document.getElementById('btnText');
+        const btnGroup = document.getElementById('btnGroup');
+        const summaryModal = document.getElementById('summaryModal');
 
         function initApp() {
             map = L.map('map', { zoomControl: false }).setView([53.5511, 9.9937], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
-            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85}).addTo(map);
+            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85, smoothFactor: 1}).addTo(map);
             lucide.createIcons();
             checkAndRequestLocationPermission();
         }
@@ -245,9 +349,8 @@
 
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } 
-            catch (err) { console.warn("Wake Lock blockiert:", err.message); }
+            catch (err) {}
         }
-
         function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
 
         function checkAndRequestLocationPermission() {
@@ -259,23 +362,62 @@
             }, () => {}, { enableHighAccuracy: true });
         }
 
-        function startTracking() {
-            isTracking = true;
-            btnText.textContent = "Stop";
-            actionBtn.classList.add("stop");
+        // --- Steuerungs-Logik ---
+        function handleStart() {
+            trackingStatus = 'tracking';
+            updateControlButtons();
             pocketBtn.style.display = "flex";
-            btnIcon.setAttribute('data-lucide', 'square');
-            lucide.createIcons();
-
-            totalSeconds = 0; totalDistanceKm = 0; totalElevationGain = 0; lastAltitude = null; positions = [];
-            polyline.setLatLngs([]);
+            
             requestWakeLock();
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                updateDashboard();
+            }, 1000);
 
-            startTime = Date.now();
-            timerInterval = setInterval(updateTimer, 1000);
+            startGPSWatching();
+        }
 
+        function handlePause() {
+            trackingStatus = 'paused';
+            updateControlButtons();
+            clearInterval(timerInterval);
+            if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+            releaseWakeLock();
+        }
+
+        function handleResume() {
+            trackingStatus = 'tracking';
+            updateControlButtons();
+            requestWakeLock();
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                updateDashboard();
+            }, 1000);
+            startGPSWatching();
+        }
+
+        function handleStop() {
+            clearInterval(timerInterval);
+            if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+            releaseWakeLock();
+            
+            pocketBtn.style.display = "none";
+
+            if (totalDistanceKm > 0.01) {
+                saveWorkout(totalDistanceKm, totalSeconds, Math.round(totalElevationGain));
+                openSummary();
+            } else {
+                alert("Workout war zu kurz zum Speichern.");
+                resetTrackerUI();
+            }
+            trackingStatus = 'stopped';
+            updateControlButtons();
+        }
+
+        function startGPSWatching() {
             watchId = navigator.geolocation.watchPosition(
                 (position) => {
+                    if (trackingStatus !== 'tracking') return;
                     const lat = position.coords.latitude; const lon = position.coords.longitude; const alt = position.coords.altitude;
                     const newPoint = L.latLng(lat, lon);
 
@@ -291,7 +433,8 @@
                         }
                     }
                     if (alt !== null) lastAltitude = alt;
-                    positions.push(newPoint); polyline.setLatLngs(positions);
+                    positions.push(newPoint); 
+                    polyline.setLatLngs(positions);
                     map.setView(newPoint, 16);
                     if (!marker) { marker = L.circleMarker(newPoint, { radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map); } 
                     else { marker.setLatLng(newPoint); }
@@ -300,22 +443,28 @@
             );
         }
 
-        function stopTracking() {
-            isTracking = false;
-            btnText.textContent = "Start";
-            actionBtn.classList.remove("stop");
-            pocketBtn.style.display = "none";
-            btnIcon.setAttribute('data-lucide', 'play');
+        function updateControlButtons() {
+            if (trackingStatus === 'tracking') {
+                btnGroup.innerHTML = `<button class="btn btn-danger" onclick="handlePause()"><i data-lucide="pause"></i>Pause</button>`;
+            } else if (trackingStatus === 'paused') {
+                btnGroup.innerHTML = `
+                    <button class="btn btn-success" onclick="handleResume()"><i data-lucide="play"></i>Weiter</button>
+                    <button class="btn btn-danger" style="background-color:#8E8E93;" onclick="handleStop()"><i data-lucide="square"></i>Beenden</button>
+                `;
+            } else if (trackingStatus === 'stopped') {
+                btnGroup.innerHTML = `<button id="startBtn" class="btn btn-primary" onclick="handleStart()"><i data-lucide="play"></i>Start</button>`;
+            }
             lucide.createIcons();
-            
-            clearInterval(timerInterval);
-            if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-            releaseWakeLock();
-
-            if (totalDistanceKm > 0.01) { saveWorkout(totalDistanceKm, totalSeconds, Math.round(totalElevationGain)); }
         }
 
-        function updateTimer() { totalSeconds = Math.floor((Date.now() - startTime) / 1000); updateDashboard(); }
+        function resetTrackerUI() {
+            totalSeconds = 0; totalDistanceKm = 0; totalElevationGain = 0; lastAltitude = null; positions = [];
+            polyline.setLatLngs([]);
+            if(marker) { map.removeLayer(marker); marker = null; }
+            updateDashboard();
+            checkAndRequestLocationPermission();
+        }
+
         function updateDashboard() {
             timeDisplay.textContent = formatTime(totalSeconds);
             distDisplay.textContent = totalDistanceKm.toFixed(2);
@@ -323,6 +472,36 @@
             paceDisplay.textContent = totalDistanceKm > 0.02 ? calculatePace(totalSeconds, totalDistanceKm) : "--:--";
         }
 
+        // --- Summary Screen Logik ---
+        function openSummary() {
+            document.getElementById('sumDist').textContent = `${totalDistanceKm.toFixed(2)} km`;
+            document.getElementById('sumTime').textContent = formatTime(totalSeconds);
+            document.getElementById('sumPace').textContent = `${calculatePace(totalSeconds, totalDistanceKm)} min/km`;
+            document.getElementById('sumElevation').textContent = `${Math.round(totalElevationGain)}m`;
+            
+            summaryModal.style.display = 'flex';
+            
+            // Render Map im Summary Screen
+            setTimeout(() => {
+                if (!summaryMap) {
+                    summaryMap = L.map('summaryMap', { zoomControl: false });
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(summaryMap);
+                    summaryPolyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85}).addTo(summaryMap);
+                }
+                
+                if (positions.length > 0) {
+                    summaryPolyline.setLatLngs(positions);
+                    summaryMap.fitBounds(summaryPolyline.getBounds(), { padding: [20, 20] });
+                }
+            }, 200);
+        }
+
+        function closeSummary() {
+            summaryModal.style.display = 'none';
+            resetTrackerUI();
+        }
+
+        // --- Helpers ---
         function formatTime(seconds) {
             const hrs = Math.floor(seconds / 3600); const mins = Math.floor((seconds % 3600) / 60); const secs = seconds % 60;
             return hrs > 0 ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}` : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -340,6 +519,7 @@
             return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
         }
 
+        // --- Speicher & Historie ---
         function saveWorkout(km, seconds, elevation) {
             const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
             workouts.unshift({ id: Date.now(), date: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }), km: km, seconds: seconds, elevation: elevation, pace: calculatePace(seconds, km) });
@@ -357,11 +537,17 @@
             document.getElementById('totalElevAllTime').textContent = `${totalElev}m`;
 
             if (workouts.length === 0) { listContainer.innerHTML = '<div class="no-workouts">Noch keine Aktivitäten aufgezeichnet.</div>'; return; }
+            
             listContainer.innerHTML = workouts.map(w => `
                 <div class="workout-card">
                     <div class="workout-info">
                         <div class="date">${w.date}</div>
-                        <div class="details">${w.km.toFixed(2)} km &middot; ${formatTime(w.seconds)} &middot; ${w.pace} min/km</div>
+                        <div class="main-stats">${w.km.toFixed(2)} km</div>
+                        <div class="sub-stats">
+                            <span><i data-lucide="timer"></i>${formatTime(w.seconds)}</span>
+                            <span><i data-lucide="gauge"></i>${w.pace} /km</span>
+                            ${w.elevation > 0 ? `<span><i data-lucide="trending-up"></i>${w.elevation}m</span>` : ''}
+                        </div>
                     </div>
                     <button class="share-btn" onclick="shareWorkout('${w.date}', ${w.km}, '${w.pace}', ${w.seconds}, ${w.elevation || 0})"><i data-lucide="share-2"></i>Teilen</button>
                 </div>
@@ -375,11 +561,8 @@
             else { navigator.clipboard.writeText(shareText); alert('Kopiert! 📋'); }
         }
 
-        // Pocket Mode Event-Handling
         pocketBtn.addEventListener('click', () => { pocketOverlay.style.display = 'flex'; });
         pocketOverlay.addEventListener('dblclick', () => { pocketOverlay.style.display = 'none'; });
-
-        actionBtn.addEventListener('click', () => { if (isTracking) { stopTracking(); } else { startTracking(); } });
 
         initApp();
     </script>
