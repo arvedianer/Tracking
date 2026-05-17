@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Track OS</title>
     
-    <!-- Leaflet CSS für die Karte -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <!-- Lucide Icons für den professionellen UI-Look -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -38,7 +35,6 @@
             overflow: hidden;
         }
 
-        /* Views */
         .view {
             display: none;
             flex-direction: column;
@@ -46,11 +42,9 @@
             width: 100%;
         }
 
-        .view.active {
-            display: flex;
-        }
+        .view.active { display: flex; }
 
-        /* Dashboard Grid */
+        /* Dashboard */
         #dashboard {
             background-color: var(--card-bg);
             padding: 20px 15px;
@@ -64,201 +58,102 @@
             z-index: 10;
         }
 
-        .metric {
-            text-align: center;
-        }
+        .metric { text-align: center; }
+        .metric-value { font-size: 22px; font-weight: 700; display: block; letter-spacing: -0.5px; }
+        .metric-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .metric-label i { width: 12px; height: 12px; }
 
-        .metric-value {
-            font-size: 22px;
-            font-weight: 700;
-            display: block;
-            letter-spacing: -0.5px;
-        }
+        #map { flex-grow: 1; width: 100%; z-index: 1; }
 
-        .metric-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .metric-label i {
-            width: 12px;
-            height: 12px;
-        }
-
-        /* Karte */
-        #map {
-            flex-grow: 1;
-            width: 100%;
-            z-index: 1;
-        }
-
-        /* Action Buttons */
+        /* Controls */
         #controls {
             position: absolute;
             bottom: 95px;
             left: 0;
             width: 100%;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             z-index: 20;
             pointer-events: none;
         }
 
-        #actionBtn {
+        .btn {
             pointer-events: auto;
-            background-color: var(--accent);
-            color: white;
             border: none;
             border-radius: 50px;
-            padding: 16px 36px;
             font-size: 16px;
             font-weight: 600;
-            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.25);
-            transition: transform 0.2s, background-color 0.2s;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+
+        #actionBtn {
+            background-color: var(--accent);
+            color: white;
+            padding: 16px 36px;
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.25);
+        }
+        #actionBtn.stop { background-color: var(--danger); box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25); }
+
+        #pocketBtn {
+            background-color: #1D1D1F;
+            color: white;
+            padding: 12px 24px;
+            font-size: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            display: none; /* Erst bei Start zeigen */
         }
 
-        #actionBtn i {
-            width: 18px;
-            height: 18px;
-        }
-
-        #actionBtn:active { transform: scale(0.96); }
-        #actionBtn.stop {
-            background-color: var(--danger);
-            box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25);
-        }
-
-        /* Historie View */
-        #historyView {
-            padding: 24px;
-            padding-top: 45px;
-            overflow-y: auto;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-        }
-
-        .stats-summary {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 20px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.01);
-        }
-
-        .workout-card {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .workout-info .date {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .workout-info .details {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .share-btn {
-            background: var(--bg-color);
-            border: none;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--accent);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .share-btn i {
-            width: 14px;
-            height: 14px;
-        }
-
-        .no-workouts {
-            text-align: center;
-            color: var(--text-muted);
-            margin-top: 60px;
-            font-size: 15px;
-        }
-
-        /* Tab Bar Navigation */
-        #tabBar {
-            height: 75px;
-            background-color: var(--card-bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+        /* Pocket Mode Overlay */
+        #pocketOverlay {
+            display: none;
             position: fixed;
-            bottom: 0;
+            top: 0;
             left: 0;
-            width: 100%;
-            z-index: 30;
-            padding-bottom: 15px;
-        }
-
-        .tab-item {
-            display: flex;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 9999;
+            color: #333;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            background: none;
-            border: none;
-            width: 50%;
-            gap: 4px;
-            transition: color 0.2s;
+            text-align: center;
+            padding: 30px;
         }
+        #pocketOverlay p { font-size: 14px; color: #444; margin-top: 20px; }
 
-        .tab-item i {
-            width: 20px;
-            height: 20px;
-        }
+        /* Historie */
+        #historyView { padding: 24px; padding-top: 45px; overflow-y: auto; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.5px; }
+        .stats-summary { background: var(--card-bg); padding: 20px; border-radius: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
+        .workout-card { background: var(--card-bg); padding: 18px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.01); display: flex; justify-content: space-between; align-items: center; }
+        .workout-info .date { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+        .workout-info .details { font-size: 15px; font-weight: 600; color: var(--text-main); }
+        .share-btn { background: var(--bg-color); border: none; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .share-btn i { width: 14px; height: 14px; }
+        .no-workouts { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 15px; }
 
-        .tab-item.active {
-            color: var(--accent);
-        }
+        /* Tab Bar */
+        #tabBar { height: 75px; background-color: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 30; padding-bottom: 15px; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer; background: none; border: none; width: 50%; gap: 4px; }
+        .tab-item i { width: 20px; height: 20px; }
+        .tab-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <!-- TRACKER VIEW -->
+    <div id="pocketOverlay">
+        <i data-lucide="lock" style="width: 48px; height: 48px; color: #222;"></i>
+        <p>Taschenmodus aktiv.<br>Doppelt tippen zum Entsperren.</p>
+    </div>
+
     <div id="trackView" class="view active">
         <div id="dashboard">
             <div class="metric">
@@ -282,51 +177,29 @@
         <div id="map"></div>
 
         <div id="controls">
-            <button id="actionBtn"><i data-lucide="play" id="btnIcon"></i><span id="btnText">Start</span></button>
+            <button id="pocketBtn" class="btn"><i data-lucide="eye-off"></i>Taschenmodus</button>
+            <button id="actionBtn" class="btn"><i data-lucide="play" id="btnIcon"></i><span id="btnText">Start</span></button>
         </div>
     </div>
 
-    <!-- HISTORIE VIEW -->
     <div id="historyView" class="view">
         <h1>Aktivitäten</h1>
-        
         <div class="stats-summary">
-            <div class="metric">
-                <span class="metric-value" id="totalKmAllTime">0.0</span>
-                <span class="metric-label">Gesamt KM</span>
-            </div>
-            <div class="metric">
-                <span class="metric-value" id="totalCountAllTime">0</span>
-                <span class="metric-label">Workouts</span>
-            </div>
-            <div class="metric">
-                <span class="metric-value" id="totalElevAllTime">0m</span>
-                <span class="metric-label">Höhenmeter</span>
-            </div>
+            <div class="metric"><span class="metric-value" id="totalKmAllTime">0.0</span><span class="metric-label">Gesamt KM</span></div>
+            <div class="metric"><span class="metric-value" id="totalCountAllTime">0</span><span class="metric-label">Workouts</span></div>
+            <div class="metric"><span class="metric-value" id="totalElevAllTime">0m</span><span class="metric-label">Höhenmeter</span></div>
         </div>
-
-        <div id="historyList">
-            <!-- Dynamischer Inhalt -->
-        </div>
+        <div id="historyList"></div>
     </div>
 
-    <!-- TAB BAR -->
     <nav id="tabBar">
-        <button class="tab-item active" onclick="switchView('trackView')">
-            <i data-lucide="navigation"></i>
-            <span>Tracker</span>
-        </button>
-        <button class="tab-item" onclick="switchView('historyView')">
-            <i data-lucide="activity"></i>
-            <span>Historie</span>
-        </button>
+        <button class="tab-item active" onclick="switchView('trackView')"><i data-lucide="navigation"></i><span>Tracker</span></button>
+        <button class="tab-item" onclick="switchView('historyView')"><i data-lucide="activity"></i><span>Historie</span></button>
     </nav>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        // --- Variablen ---
         let isTracking = false;
         let watchId = null;
         let timerInterval = null;
@@ -343,86 +216,59 @@
         let map = null;
         let marker = null;
 
-        // --- DOM Elemente ---
         const timeDisplay = document.getElementById('timeDisplay');
         const distDisplay = document.getElementById('distDisplay');
         const paceDisplay = document.getElementById('paceDisplay');
         const elevationDisplay = document.getElementById('elevationDisplay');
         const actionBtn = document.getElementById('actionBtn');
+        const pocketBtn = document.getElementById('pocketBtn');
+        const pocketOverlay = document.getElementById('pocketOverlay');
         const btnIcon = document.getElementById('btnIcon');
         const btnText = document.getElementById('btnText');
 
-        // --- Init Karte & Icons ---
         function initApp() {
             map = L.map('map', { zoomControl: false }).setView([53.5511, 9.9937], 13);
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
-                maxZoom: 20
-            }).addTo(map);
-
-            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85, smoothFactor: 1}).addTo(map);
-            
-            // Initialisiert die Lucide Vektor-Icons
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
+            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85}).addTo(map);
             lucide.createIcons();
+            checkAndRequestLocationPermission();
         }
 
-        // --- Navigation ---
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            
             document.getElementById(viewId).classList.add('active');
             event.currentTarget.classList.add('active');
-
-            if(viewId === 'historyView') {
-                renderHistory();
-            } else if (viewId === 'trackView' && map) {
-                setTimeout(() => map.invalidateSize(), 100);
-            }
+            if(viewId === 'historyView') { renderHistory(); }
+            else if (viewId === 'trackView' && map) { setTimeout(() => map.invalidateSize(), 100); }
         }
 
-        // --- Auto-Lock Schutz (Wake Lock) ---
         async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {
-                console.warn("Wake Lock blockiert:", err.message);
-            }
+            try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } 
+            catch (err) { console.warn("Wake Lock blockiert:", err.message); }
         }
 
-        function releaseWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release();
-                wakeLock = null;
-            }
+        function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
+
+        function checkAndRequestLocationPermission() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition((position) => {
+                const loc = L.latLng(position.coords.latitude, position.coords.longitude);
+                map.setView(loc, 15);
+                if (!marker) { marker = L.circleMarker(loc, { radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map); }
+            }, () => {}, { enableHighAccuracy: true });
         }
 
-        // --- Tracking Logik ---
         function startTracking() {
-            if (!navigator.geolocation) {
-                alert("Dein Browser unterstützt kein GPS.");
-                return;
-            }
-
             isTracking = true;
             btnText.textContent = "Stop";
             actionBtn.classList.add("stop");
+            pocketBtn.style.display = "flex";
             btnIcon.setAttribute('data-lucide', 'square');
             lucide.createIcons();
 
-            // Reset
-            totalSeconds = 0;
-            totalDistanceKm = 0;
-            totalElevationGain = 0;
-            lastAltitude = null;
-            positions = [];
+            totalSeconds = 0; totalDistanceKm = 0; totalElevationGain = 0; lastAltitude = null; positions = [];
             polyline.setLatLngs([]);
-            if(marker) { map.removeLayer(marker); marker = null; }
-
-            // Verhinderte Display-Ausschalten aktivieren
             requestWakeLock();
 
             startTime = Date.now();
@@ -430,46 +276,27 @@
 
             watchId = navigator.geolocation.watchPosition(
                 (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const alt = position.coords.altitude; // Kann null sein, falls kein stabiles GPS-Signal
+                    const lat = position.coords.latitude; const lon = position.coords.longitude; const alt = position.coords.altitude;
                     const newPoint = L.latLng(lat, lon);
 
                     if (positions.length > 0) {
                         const lastPoint = positions[positions.length - 1];
                         const dist = getDistanceFromLatLonInKm(lastPoint.lat, lastPoint.lng, lat, lon);
-                        
-                        if (position.coords.accuracy < 25 && dist > 0.003) {
+                        if (position.coords.accuracy < 30 && dist > 0.002) {
                             totalDistanceKm += dist;
-                            
-                            // Höhenmeter-Gain berechnen
                             if (alt !== null && lastAltitude !== null) {
                                 const eleDiff = alt - lastAltitude;
-                                if (eleDiff > 1) { // Rauschen herausfiltern
-                                    totalElevationGain += eleDiff;
-                                }
+                                if (eleDiff > 1) totalElevationGain += eleDiff;
                             }
                         }
                     }
-
                     if (alt !== null) lastAltitude = alt;
-
-                    positions.push(newPoint);
-                    polyline.setLatLngs(positions);
-                    
+                    positions.push(newPoint); polyline.setLatLngs(positions);
                     map.setView(newPoint, 16);
-                    if (!marker) {
-                        marker = L.circleMarker(newPoint, {
-                            radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1
-                        }).addTo(map);
-                    } else {
-                        marker.setLatLng(newPoint);
-                    }
-
+                    if (!marker) { marker = L.circleMarker(newPoint, { radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map); } 
+                    else { marker.setLatLng(newPoint); }
                     updateDashboard();
-                }, 
-                (error) => { console.warn("GPS Error:", error); },
-                { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+                }, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
             );
         }
 
@@ -477,90 +304,51 @@
             isTracking = false;
             btnText.textContent = "Start";
             actionBtn.classList.remove("stop");
+            pocketBtn.style.display = "none";
             btnIcon.setAttribute('data-lucide', 'play');
             lucide.createIcons();
             
             clearInterval(timerInterval);
-            if (watchId !== null) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-            }
-
-            // Display-Sperre wieder freigeben
+            if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
             releaseWakeLock();
 
-            if (totalDistanceKm > 0.01) {
-                saveWorkout(totalDistanceKm, totalSeconds, Math.round(totalElevationGain));
-            }
+            if (totalDistanceKm > 0.01) { saveWorkout(totalDistanceKm, totalSeconds, Math.round(totalElevationGain)); }
         }
 
-        function updateTimer() {
-            totalSeconds = Math.floor((Date.now() - startTime) / 1000);
-            updateDashboard();
-        }
-
+        function updateTimer() { totalSeconds = Math.floor((Date.now() - startTime) / 1000); updateDashboard(); }
         function updateDashboard() {
             timeDisplay.textContent = formatTime(totalSeconds);
             distDisplay.textContent = totalDistanceKm.toFixed(2);
             elevationDisplay.textContent = `${Math.round(totalElevationGain)}m`;
-
-            if (totalDistanceKm > 0.02) {
-                paceDisplay.textContent = calculatePace(totalSeconds, totalDistanceKm);
-            } else {
-                paceDisplay.textContent = "--:--";
-            }
+            paceDisplay.textContent = totalDistanceKm > 0.02 ? calculatePace(totalSeconds, totalDistanceKm) : "--:--";
         }
 
-        // --- Helper Funktionen ---
         function formatTime(seconds) {
-            const hrs = Math.floor(seconds / 3600);
-            const mins = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
-            return hrs > 0 
-                ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-                : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const hrs = Math.floor(seconds / 3600); const mins = Math.floor((seconds % 3600) / 60); const secs = seconds % 60;
+            return hrs > 0 ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}` : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
         function calculatePace(seconds, distanceKm) {
             const paceInMinutes = (seconds / 60) / distanceKm;
-            const paceMins = Math.floor(paceInMinutes);
-            const paceSecs = Math.floor((paceInMinutes - paceMins) * 60);
+            const paceMins = Math.floor(paceInMinutes); const paceSecs = Math.floor((paceInMinutes - paceMins) * 60);
             return `${paceMins}:${paceSecs.toString().padStart(2, '0')}`;
         }
 
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-            const R = 6371; 
-            const dLat = deg2rad(lat2-lat1);
-            const dLon = deg2rad(lon2-lon1); 
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-                      Math.sin(dLon/2) * Math.sin(dLon/2); 
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            return R * c;
+            const R = 6371; const dLat = (lat2-lat1) * (Math.PI/180); const dLon = (lon2-lon1) * (Math.PI/180); 
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
         }
 
-        function deg2rad(deg) { return deg * (Math.PI/180); }
-
-        // --- Speicher & Historie Logik ---
         function saveWorkout(km, seconds, elevation) {
             const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-            const newWorkout = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
-                km: km,
-                seconds: seconds,
-                elevation: elevation,
-                pace: calculatePace(seconds, km)
-            };
-            workouts.unshift(newWorkout);
+            workouts.unshift({ id: Date.now(), date: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }), km: km, seconds: seconds, elevation: elevation, pace: calculatePace(seconds, km) });
             localStorage.setItem('workouts', JSON.stringify(workouts));
         }
 
         function renderHistory() {
             const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
             const listContainer = document.getElementById('historyList');
-            
-            // All-Time Stats
             const totalKm = workouts.reduce((sum, w) => sum + w.km, 0);
             const totalElev = workouts.reduce((sum, w) => sum + (w.elevation || 0), 0);
             
@@ -568,106 +356,32 @@
             document.getElementById('totalCountAllTime').textContent = workouts.length;
             document.getElementById('totalElevAllTime').textContent = `${totalElev}m`;
 
-            if (workouts.length === 0) {
-                listContainer.innerHTML = '<div class="no-workouts">Noch keine Aktivitäten aufgezeichnet. Let\'s go!</div>';
-                return;
-            }
-
+            if (workouts.length === 0) { listContainer.innerHTML = '<div class="no-workouts">Noch keine Aktivitäten aufgezeichnet.</div>'; return; }
             listContainer.innerHTML = workouts.map(w => `
                 <div class="workout-card">
                     <div class="workout-info">
                         <div class="date">${w.date}</div>
-                        <div class="details">${w.km.toFixed(2)} km &middot; ${formatTime(w.seconds)} &middot; ${w.pace} min/km ${w.elevation > 0 ? `&middot; ↗ ${w.elevation}m` : ''}</div>
+                        <div class="details">${w.km.toFixed(2)} km &middot; ${formatTime(w.seconds)} &middot; ${w.pace} min/km</div>
                     </div>
-                    <button class="share-btn" onclick="shareWorkout('${w.date}', ${w.km}, '${w.pace}', ${w.seconds}, ${w.elevation || 0})">
-                        <i data-lucide="share-2"></i>Teilen
-                    </button>
+                    <button class="share-btn" onclick="shareWorkout('${w.date}', ${w.km}, '${w.pace}', ${w.seconds}, ${w.elevation || 0})"><i data-lucide="share-2"></i>Teilen</button>
                 </div>
             `).join('');
-            
             lucide.createIcons();
         }
 
-        // --- Native Teilen Funktion ---
         async function shareWorkout(date, km, pace, seconds, elevation) {
-            let shareText = `🚴‍♂️ Workout completed!\n\n📅 Datum: ${date}\n📏 Distanz: ${km.toFixed(2)} km\n⏱️ Zeit: ${formatTime(seconds)}\n⚡ Pace: ${pace} min/km`;
-            if (elevation > 0) shareText += `\n↗️ Höhenmeter: ${elevation}m`;
-            shareText += `\n\nTracked mit Track OS.`;
-            
-            if (navigator.share) {
-                try {
-                    await navigator.share({ title: 'Mein Workout', text: shareText });
-                } catch (err) { console.log('Abgebrochen', err); }
-            } else {
-                navigator.clipboard.writeText(shareText);
-                alert('Statistiken kopiert! 📋');
-            }
+            let shareText = `🚴‍♂️ Workout geschafft!\n\n📅 Datum: ${date}\n📏 Distanz: ${km.toFixed(2)} km\n⏱️ Zeit: ${formatTime(seconds)}\n⚡ Pace: ${pace} min/km\n\nTracked mit Track OS.`;
+            if (navigator.share) { try { await navigator.share({ title: 'Mein Workout', text: shareText }); } catch (err) {} } 
+            else { navigator.clipboard.writeText(shareText); alert('Kopiert! 📋'); }
         }
 
-        // --- Event Listener ---
-        actionBtn.addEventListener('click', () => {
-            if (isTracking) { stopTracking(); } 
-            else { startTracking(); }
-        });
-        // --- Hier startet der neue, optimierte Code ---
-        function initApp() {
-            map = L.map('map', { zoomControl: false }).setView([53.5511, 9.9937], 13);
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
-                maxZoom: 20
-            }).addTo(map);
+        // Pocket Mode Event-Handling
+        pocketBtn.addEventListener('click', () => { pocketOverlay.style.display = 'flex'; });
+        pocketOverlay.addEventListener('dblclick', () => { pocketOverlay.style.display = 'none'; });
 
-            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85, smoothFactor: 1}).addTo(map);
-            
-            lucide.createIcons();
+        actionBtn.addEventListener('click', () => { if (isTracking) { stopTracking(); } else { startTracking(); } });
 
-            // Fragt die Rechte sofort beim Laden der Seite ab
-            checkAndRequestLocationPermission();
-        }
-
-        function checkAndRequestLocationPermission() {
-            if (!navigator.geolocation) {
-                alert("Fehler: Dein Browser oder Gerät unterstützt überhaupt kein GPS.");
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const loc = L.latLng(position.coords.latitude, position.coords.longitude);
-                    map.setView(loc, 15);
-                    
-                    if (!marker) {
-                        marker = L.circleMarker(loc, {
-                            radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1
-                        }).addTo(map);
-                    } else {
-                        marker.setLatLng(loc);
-                    }
-                },
-                (error) => {
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            alert("GPS-Fehler: Du hast den Standortzugriff blockiert. Bitte in den Smartphone-Einstellungen für den Browser freigeben.");
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            alert("GPS-Fehler: Standortdaten sind gerade nicht verfügbar.");
-                            break;
-                        case error.TIMEOUT:
-                            alert("GPS-Fehler: Die Standortabfrage hat zu lange gedauert.");
-                            break;
-                        default:
-                            alert("GPS-Fehler: Ein unbekannter Fehler ist aufgetreten.");
-                    }
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        }
-
-        // Führt die neue Init-Funktion aus
         initApp();
-        // --- Ende des neuen Codes ---
-
     </script>
 </body>
 </html>
