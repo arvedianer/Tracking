@@ -609,8 +609,65 @@
             if (isTracking) { stopTracking(); } 
             else { startTracking(); }
         });
+        // --- Hier startet der neue, optimierte Code ---
+        function initApp() {
+            map = L.map('map', { zoomControl: false }).setView([53.5511, 9.9937], 13);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 20
+            }).addTo(map);
 
+            polyline = L.polyline([], {color: '#007AFF', weight: 5, opacity: 0.85, smoothFactor: 1}).addTo(map);
+            
+            lucide.createIcons();
+
+            // Fragt die Rechte sofort beim Laden der Seite ab
+            checkAndRequestLocationPermission();
+        }
+
+        function checkAndRequestLocationPermission() {
+            if (!navigator.geolocation) {
+                alert("Fehler: Dein Browser oder Gerät unterstützt überhaupt kein GPS.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const loc = L.latLng(position.coords.latitude, position.coords.longitude);
+                    map.setView(loc, 15);
+                    
+                    if (!marker) {
+                        marker = L.circleMarker(loc, {
+                            radius: 6, fillColor: "#007AFF", color: "#FFFFFF", weight: 3, opacity: 1, fillOpacity: 1
+                        }).addTo(map);
+                    } else {
+                        marker.setLatLng(loc);
+                    }
+                },
+                (error) => {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("GPS-Fehler: Du hast den Standortzugriff blockiert. Bitte in den Smartphone-Einstellungen für den Browser freigeben.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("GPS-Fehler: Standortdaten sind gerade nicht verfügbar.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("GPS-Fehler: Die Standortabfrage hat zu lange gedauert.");
+                            break;
+                        default:
+                            alert("GPS-Fehler: Ein unbekannter Fehler ist aufgetreten.");
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Führt die neue Init-Funktion aus
         initApp();
+        // --- Ende des neuen Codes ---
+
     </script>
 </body>
 </html>
